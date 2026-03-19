@@ -5,5 +5,8 @@ import { z } from "zod";
 const server = new McpServer({
   name: "my-first-mcp-server",
   version: "1.0.0",
+  capabilities: {
+    tools:{},
+  },
 });
 
