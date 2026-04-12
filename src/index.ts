@@ -54,6 +54,42 @@ server.registerTool(
   }
 );  
 
+// Return Github Repo Info based on username and repo name
+server.registerTool(
+  "getGithubRepoInfo",
+  {
+    description: "Fetches information about a GitHub repository.",
+    inputSchema: z.object({
+      username: z.string().describe("The GitHub username."),
+      repoName: z.string().describe("The name of the GitHub repository."),
+    }),
+    outputSchema: z.object({
+      fullName: z.string().describe("The full name of the repository."),
+      description: z.string().describe("The description of the repository."),
+      stars: z.number().describe("The number of stars the repository has."),
+    }),
+  },
+  async (input) => {
+    const response = await fetch(`https://api.github.com/repos/${input.username}/${input.repoName}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch repository info: ${response.statusText}`);
+    }
+    const repoInfo = await response.json();
+    return {
+      content: [
+        { type: "text", text      : `Repository: ${repoInfo.full_name}` },
+        { type: "text", text      : `Description: ${repoInfo.description}` },
+        { type: "text", text      : `Stars: ${repoInfo.stargazers_count}` },
+      ],
+      structuredContent: {
+        fullName    : repoInfo.full_name,
+        description : repoInfo.description,
+        stars       : repoInfo.stargazers_count,
+      },
+    };
+  }
+);  
+
 // Start the server using standard input/output for communication.
 const transport = new StdioServerTransport();
 await server.connect(transport);  
