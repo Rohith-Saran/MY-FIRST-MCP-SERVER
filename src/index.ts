@@ -30,6 +30,33 @@ server.registerTool(
   }
 );
 
+
+
+// tool to add 2 numbers
+server.registerTool(
+  "add",
+  {
+    description: "Adds two numbers together.",
+    inputSchema: z.object({
+      a: z.number().describe("The first number."),
+      b: z.number().describe("The second number."),
+    }),
+    outputSchema: z.object({
+      result: z.number().describe("The sum of the two numbers."),
+    }),
+  },
+  async (input) => {
+    const result = input.a + input.b;
+    return {
+      content: [{ type: "text", text: `The result of adding ${input.a} and ${input.b} is ${result}.` }],
+      structuredContent: { result },
+    };
+  }
+);  
+
+// Start the server using standard input/output for communication.
 const transport = new StdioServerTransport();
 await server.connect(transport);  
+
+
 
